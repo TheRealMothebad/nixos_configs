@@ -5,11 +5,12 @@
 #==== Non-Nix Configuration files ====
 # Sway      - ~/.config/sway/config
 # iwd       - /var/lib/iwd
+# Fuzzel    - ~/.config/fuzzel/*
 # Alacritty - .alacritty.toml/yml
-# NvChad    - .config/nvim/*
-# Firefox   - /home/mo/.mozilla/firefox/nl23z759.default (textfox, installed manually bc no home manager)
+# NvChad    - ~/.config/nvim/*
+# Firefox   - /home/mo/.mozilla/firefox/nl23z759.default
 # i3status  - ~/.config/i3status/config
-# ly (cope) - :(  (doesn't work yet)
+# ly (cope) - :(
 
 { config, lib, pkgs, ... }:
 
@@ -124,7 +125,7 @@
   environment.systemPackages = with pkgs; [
     fish
     neovim
-    vim
+    vim 
     zoxide
     tree
     wget
@@ -147,7 +148,7 @@
     mako # notification system developed by swaywm maintainer
   ];
 
-  # Enable the gnome-keyring secrets vault.
+  # Enable the gnome-keyring secrets vault. 
   # Will be exposed through DBus to programs willing to store secrets.
   services.gnome.gnome-keyring.enable = true;
 
@@ -160,7 +161,7 @@
     enable = true;
     wrapperFeatures.gtk = true;
  };
-
+  
   # probably not needed since I already have my own brightness script
   # programs.light.enable = true;
   # programs.waybar.enable = true;
@@ -227,3 +228,4 @@
   system.stateVersion = "25.05"; # Did you read the comment?
 
 }
+

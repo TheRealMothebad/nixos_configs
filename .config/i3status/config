@@ -1,0 +1,90 @@
+# i3status configuration file.
+# see "man i3status" for documentation.
+
+# It is important that this file is edited as UTF-8.
+# The following line should contain a sharp s:
+# ß
+# If the above line is not correctly displayed, fix your editor first!
+
+general {
+        colors = true
+        interval = 1
+
+	color_good = "#7c00f9"
+}
+
+#order += "ipv6"
+order += "volume_master"
+order += "read_file BRIGHTNESS"
+order += "wireless _first_"
+#order += "ethernet _first_"
+#order += "disk /"
+order += "cpu_usage"
+order += "cpu_temperature 0"
+order += "memory"
+order += "battery all"
+order += "tztime local"
+
+wireless _first_ {
+#       format_up = "W: (%quality @ %essid) %ip"
+        format_up = "W: %essid %ip"
+        format_down = "W: down"
+}
+
+ethernet _first_ {
+        format_up = "E: %ip (%speed)"
+        format_down = "E: down"
+}
+
+battery all {
+#       format = "%status %percentage %remaining"
+        format = "%status %percentage"
+	low_threshold = 15
+	threshold_type = percentage
+}
+
+disk "/" {
+        format = "%avail"
+}
+
+load {
+        format = "L: %1min"
+}
+
+cpu_usage {
+	format = "CPU: %usage"
+	degraded_threshold = 30
+	max_threshold = 85
+}
+
+cpu_temperature 0 {
+	format = "%degrees °C"
+	max_threshold = 50
+	path = "/sys/class/thermal/thermal_zone13/temp"
+}
+
+memory {
+        format = "M: %used / 15"
+	#format = "Mem: %used / %total"
+        threshold_degraded = "1G"
+        #format_degraded = "MEMORY < %available"
+}
+
+tztime local {
+#       format = "%Y-%m-%d %H:%M:%S"
+        format = "%m-%d-%Y %H:%M:%S"
+}
+
+volume master {
+	format = "Vol: %volume"
+	format_muted = "Vol: Mute"
+	device = "default"
+	color_degraded = "#7c00f9"
+}
+
+read_file BRIGHTNESS {
+	format = "Br: %content"
+	color_good = "#ffffff"
+	format_bad = "Br: Err"
+	path = "~/.cache/current_brightness"
+}

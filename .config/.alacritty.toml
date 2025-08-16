@@ -1,0 +1,26 @@
+[font]
+size = 16.0
+
+[font.normal]
+family = "CodeNewRoman Nerd Font"
+style = "regular"
+
+[font.offset]
+x = 0
+y = 0
+
+[[mouse.bindings]]
+action = "None"
+mode = "~Vi"
+mouse = "Middle"
+
+[scrolling]
+multiplier = 1
+
+[terminal.shell]
+program = "/run/current-system/sw/bin/fish"
+
+[window]
+opacity = 0.8
+
+[terminal]
