@@ -16,6 +16,9 @@
 #::: from i3-gaps config
 output eDP-1 scale 1.6
 
+#start kanshi (wayland version of xrandr?)
+exec sleep 5; systemctl --user start kanshi.service
+
 # disable window borders
 default_floating_border pixel 0
 default_border pixel 0
@@ -112,6 +115,8 @@ bindsym $mod+x exec xterm
 
 #Start a browser
 bindsym $mod+b exec --no-startup-id firefox
+#start school browser
+bindsym $mod+n exec --no-startup-id librewolf
 
 # kill focused window
 bindsym $mod+Shift+q kill

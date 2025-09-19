@@ -5,10 +5,10 @@
 #==== Non-Nix Configuration files ====
 # Sway      - ~/.config/sway/config
 # iwd       - /var/lib/iwd
-# Fuzzel    - ~/.config/fuzzel/*
-# Alacritty - .alacritty.toml/yml
-# NvChad    - ~/.config/nvim/*
-# Firefox   - /home/mo/.mozilla/firefox/nl23z759.default
+# Fuzzel    - ~/.config/fuzzel/fuzzel.ini
+# Alacritty - ~/.alacritty.toml/yml
+# NvChad    - ~/.config/nvim/init.lua and /lua
+# Firefox   - ~/.mozilla/firefox/nl23z759.default
 # i3status  - ~/.config/i3status/config
 # ly (cope) - :(
 
@@ -23,6 +23,19 @@
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  # BIOS updates?
+  services.fwupd.enable = true;
+
+  #fingerprint reader
+  #https://wiki.nixos.org/wiki/Fingerprint_scanner
+  systemd.services.fprintd = {
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "simple";
+  };
+
+  services.fprintd.enable = true;
+
 
   networking.hostName = "beeblebrox"; # Define your hostname.
   # Pick only one of the below networking options.
@@ -39,6 +52,9 @@
       };
     };
   };
+
+  services.tailscale.enable = false;
+  programs.adb.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/Detroit";
@@ -66,6 +82,16 @@
     pulse.enable = true;
   };
 
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        Experimental = true; # Show battery charge of Bluetooth devices
+      };
+    };
+  };
+
   # Enable touchpad support (enabled default in most desktopManager).
   # services.libinput.enable = true;
 
@@ -74,7 +100,7 @@
     isNormalUser = true;
     uid = 1000;
     group = "mo";
-    extraGroups = [ "wheel" "video" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "video" "wireshark" "adbusers" ]; # Enable ‘sudo’ for the user.
     shell = pkgs.bashInteractive;
     packages = with pkgs; [
       #terminal stuff
@@ -83,34 +109,46 @@
       fuzzel # dmenu
       play
       scrot # screenshot utility
+      newsboat # rss reader
+      clang
+      swappy # part of command line screenshot tool
+      bison
+      htop
+      ffmpeg
+      unzip
+      inetutils # ftp, telnet
 
       #applications
       firefox
       vlc
       libreoffice
       gimp
-      obs-studio
-      google-cloud-sdk
+      #obs-studio
       nemo
       kdePackages.dolphin
-      zoom
-      imagemagic
-      arduino-ide
+      #zoom
+      imagemagick
       arduino
       discord
       qdirstat
       steam
       darktable
       librewolf
-      prismlauncher
-      jetbrains.rust-rover
-      jetbrains.idea-ultimate
+      #jetbrains.rust-rover
+      android-studio
+      android-tools
+      freecad-wayland
+      bambu-studio
+      lorien
+      #qgis
 
       #wine
       wineWowPackages.stable
       winetricks
     ];
   };
+
+  programs.wireshark.enable = false;
 
   users.groups.mo = {};
 
@@ -119,6 +157,10 @@
   ];
 
   nixpkgs.config.allowUnfree = true;
+
+  nixpkgs.config = {
+    android_sdk.accept_license = true;
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -133,6 +175,7 @@
     brightnessctl
     #switch to i3status-rust when out of unstable!
     i3status
+    python3
 
     #fonts
 
@@ -171,7 +214,7 @@
     description = "kanshi daemon";
     serviceConfig = {
       Type = "simple";
-      ExecStart = ''${pkgs.kanshi}/bin/kanshi -c kanshi_config_file'';
+      ExecStart = ''${pkgs.kanshi}/bin/kanshi'';
     };
   };
 
