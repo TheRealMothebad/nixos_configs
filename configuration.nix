@@ -15,6 +15,7 @@
 { config, lib, pkgs, ... }:
 
 {
+
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -36,6 +37,8 @@
 
   services.fprintd.enable = true;
 
+  #flaken' it up
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   networking.hostName = "beeblebrox"; # Define your hostname.
   # Pick only one of the below networking options.
@@ -52,9 +55,6 @@
       };
     };
   };
-
-  services.tailscale.enable = false;
-  programs.adb.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/Detroit";
@@ -84,7 +84,7 @@
 
   hardware.bluetooth = {
     enable = true;
-    powerOnBoot = true;
+    powerOnBoot = false;
     settings = {
       General = {
         Experimental = true; # Show battery charge of Bluetooth devices
@@ -100,55 +100,86 @@
     isNormalUser = true;
     uid = 1000;
     group = "mo";
-    extraGroups = [ "wheel" "video" "wireshark" "adbusers" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "video" "wireshark" "adbusers" "seat" ]; # Enable ‘sudo’ for the user.
     shell = pkgs.bashInteractive;
     packages = with pkgs; [
-      #terminal stuff
+      # Terminal stuff
       alacritty
       xterm
       fuzzel # dmenu
-      play
+      play # play audio from the command line
       scrot # screenshot utility
       newsboat # rss reader
       clang
+      clang-tools_16
       swappy # part of command line screenshot tool
-      bison
+      bison #for CS 4121 Prog Lang
+      flex  #for CS 4121 Prog Lang
+      gdb
+      valgrind
+      deno
       htop
       ffmpeg
       unzip
-      inetutils # ftp, telnet
+      inetutils #ftp, telnet
+      alsa-utils
+      zip
+      fastfetch #neofetch replacement
+      tmux
+      nodejs_20
 
-      #applications
+      # Applications
       firefox
       vlc
       libreoffice
       gimp
-      #obs-studio
-      nemo
+      obs-studio
       kdePackages.dolphin
-      #zoom
+      zoom
       imagemagick
       arduino
       discord
-      qdirstat
+      
+      qdirstat # spacial file viewer
       steam
       darktable
       librewolf
-      #jetbrains.rust-rover
+      jetbrains.rust-rover
       android-studio
-      android-tools
+      android-tools # android command line debugger
       freecad-wayland
       bambu-studio
       lorien
-      #qgis
+      pavucontrol # mic/speaker control tool
+      ghex # hex reader (not editor?)
 
-      #wine
+      # Wine tooling
       wineWowPackages.stable
       winetricks
+
+      # Cursor
+      adwaita-icon-theme
     ];
   };
 
-  programs.wireshark.enable = false;
+  services.mysql.enable = true;
+  services.mysql.package = pkgs.mariadb;
+  virtualisation.docker.enable = true;
+  services.tailscale.enable = false;
+  programs.adb.enable = true;
+
+  services.auto-cpufreq.enable = true;
+  services.auto-cpufreq.settings = {
+    battery = {
+      governor = "powersave";
+      turbo = "never";
+    };
+    charger = {
+      governor = "performance";
+      turbo = "auto";
+    };
+  };
+
 
   users.groups.mo = {};
 
@@ -173,16 +204,21 @@
     wget
     git
     brightnessctl
+    gcc
+    gnumake # make
     #switch to i3status-rust when out of unstable!
     i3status
     python3
+    jdk
+    rustup
 
     #fonts
 
     # For wayland/sway
     swaybg
+    # this has not been set up yet
     betterlockscreen
-    bc
+    bc  # no clue lol
     gammastep # fractional brightness (replace xrandr)
     grim # screenshot functionality
     slurp # screenshot functionality
@@ -190,6 +226,17 @@
     xclip # command line to clipboard
     mako # notification system developed by swaywm maintainer
   ];
+
+  systemd.user.services.dbus.environment = {
+    WAYLAND_DISPLAY = "wayland-0";
+    #XDG_CURRENT_DESKTOP = "sway";
+  };
+
+  programs.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true;
+  };
+
 
   # Enable the gnome-keyring secrets vault. 
   # Will be exposed through DBus to programs willing to store secrets.
@@ -199,12 +246,6 @@
   services.xserver.enable = true;
   services.xserver.displayManager.gdm.enable = true;
 
-  # enable sway window manager
-  programs.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true;
- };
-  
   # probably not needed since I already have my own brightness script
   # programs.light.enable = true;
   # programs.waybar.enable = true;
@@ -225,7 +266,6 @@
       fsType = "ext4";
     };
   };
-
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
